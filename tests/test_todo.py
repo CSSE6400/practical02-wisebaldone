@@ -6,7 +6,7 @@ TODO_1 = {
             "title": "Watch CSSE6400 Lecture",
             "description": "Watch the CSSE6400 lecture on ECHO360 for week 1",
             "completed": True,
-            "deadline_at": datetime.fromisoformat("2023-02-27T00:00:00"),
+            "deadline_at": "2023-02-27T00:00:00",
         }
 
 TODO_2 = {
@@ -14,7 +14,7 @@ TODO_2 = {
             "title": "Pass Practical Tests",
             "description": "Pass the practical tests for CSSE6400",
             "completed": False,
-            "deadline_at": datetime.fromisoformat("2023-03-01T00:00:00"),
+            "deadline_at": "2023-03-01T00:00:00",
         }
 
 # a todo in 4 days time
@@ -42,8 +42,18 @@ class TestTodo(TodoTest):
             from todo.models import db
             from todo.models.todo import Todo
             for todo in todos:
+                todo = self._fake_json_to_todo(todo)
                 db.session.add(Todo(**todo))
             db.session.commit()
+
+    def _fake_json_to_todo(self, fake):
+        result = {}
+        for key, value in fake.items():
+            copy = value
+            if key in ['created_at', 'updated_at', 'deadline_at']:
+                copy = datetime.fromisoformat(value)
+            result[key] = copy
+        return result
 
     def test_get_item(self):
         self._populate_records([TODO_1])
@@ -90,16 +100,22 @@ class TestTodo(TodoTest):
 
         response = self.client.get('/api/v1/todos?window=5')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json), 1)
-        self.assertDictSubset(TODO_FUTURE_1, response.json[0])
+        self.assertEqual(len(response.json), 3)
+        self.assertDictSubset(TODO_1, response.json[0])
+        self.assertDictSubset(TODO_2, response.json[1])
+        self.assertDictSubset(TODO_FUTURE_1, response.json[2])
 
     def test_post_item_success(self):
-        response = self.client.post('/api/v1/todos', json=TODO_1)
+        todo = TODO_1.copy()
+        del todo['id']
+
+        response = self.client.post('/api/v1/todos', json=todo)
         self.assertEqual(response.status_code, 201)
         self.assertDictSubset(TODO_1, response.json)
 
     def test_post_item_missing_title(self):
         todo = TODO_1.copy()
+        del todo['id']
         del todo['title']
         response = self.client.post('/api/v1/todos', json=todo)
         self.assertEqual(response.status_code, 400)
@@ -111,7 +127,9 @@ class TestTodo(TodoTest):
         self.assertEqual(response.status_code, 400)
 
     def test_post_item_success_then_get(self):
-        response = self.client.post('/api/v1/todos', json=TODO_1)
+        todo = TODO_1.copy()
+        del todo['id']
+        response = self.client.post('/api/v1/todos', json=todo)
         self.assertEqual(response.status_code, 201)
         self.assertDictSubset(TODO_1, response.json)
 
@@ -123,6 +141,7 @@ class TestTodo(TodoTest):
         todo = TODO_1.copy()
         del todo['completed']
         del todo['deadline_at']
+        del todo['id']
         response = self.client.post('/api/v1/todos', json=todo)
         self.assertEqual(response.status_code, 201)
         self.assertDictSubset(todo, response.json)
@@ -183,5 +202,5 @@ class TestTodo(TodoTest):
 
     def test_delete_item_not_found(self):
         response = self.client.delete('/api/v1/todos/1')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 

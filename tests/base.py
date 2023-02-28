@@ -12,6 +12,4 @@ class TodoTest(unittest.TestCase):
 
     def assertDictSubset(self, expected: dict, todo: dict):
         for key, value in expected.items():
-            if key in ['created_at', 'updated_at', 'deadline_at']:
-                value = value.isoformat()
             self.assertEqual(todo[key], value)
