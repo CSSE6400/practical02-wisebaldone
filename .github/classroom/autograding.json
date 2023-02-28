@@ -22,7 +22,7 @@
     },
     {
       "name": "Correct Health Endpoint",
-      "setup": "",
+      "setup": "pip3 install pipenv",
       "run": "./.csse6400/bin/health.sh",
       "input": "",
       "output": "",
@@ -32,7 +32,7 @@
     },
     {
       "name": "Correct Unit Tests",
-      "setup": "",
+      "setup": "pip3 install pipenv",
       "run": "./.csse6400/bin/unittest.sh",
       "input": "",
       "output": "",
