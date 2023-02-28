@@ -1,20 +1,20 @@
 from tests.base import TodoTest
-from datetime import datetime
+from datetime import datetime, timedelta
 
 TODO_1 = {
             "id": 1,
             "title": "Watch CSSE6400 Lecture",
             "description": "Watch the CSSE6400 lecture on ECHO360 for week 1",
             "completed": True,
-            "deadline_at": "2023-02-27T00:00:00",
+            "deadline_at": datetime.fromisoformat("2023-02-27T00:00:00"),
         }
 
 TODO_2 = {
             "id": 2,
-            "title": "Pass Practical Tests"
+            "title": "Pass Practical Tests",
             "description": "Pass the practical tests for CSSE6400",
             "completed": False,
-            "deadline_at": "2023-03-01T00:00:00",
+            "deadline_at": datetime.fromisoformat("2023-03-01T00:00:00"),
         }
 
 # a todo in 4 days time
